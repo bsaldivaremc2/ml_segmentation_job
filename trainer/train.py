@@ -53,11 +53,13 @@ def main(args):
         monitor='val_dice_coef',
         mode='max',
         save_best_only=True)
+    tb_dir = '{}tensorboard_logs/'.format(DATA_DIR)
+    tb_callback = tf.keras.callbacks.TensorBoard(tb_dir, update_freq="epoch")
     model_history = unet.fit(tr_ds.repeat(), epochs=EPOCHS,
                           steps_per_epoch=STEPS_PER_EPOCH,
                           validation_steps=VALIDATION_STEPS,
                           validation_data=vl_ds.repeat(),
-                        callbacks=[model_checkpoint_callback])
+                        callbacks=[model_checkpoint_callback,tb_callback])
     unet.load_weights(checkpoint_filepath)
     val_loss, val_metric = unet.evaluate(vl_ds)
     val_metric = round(val_metric,3)
